@@ -1,0 +1,40 @@
+#include "mbed.h"
+
+/* Network settings */
+#define txSize 8
+#define rxSize 8
+#define CAN_ID 1
+#define CAN_MASTER_ID 0
+
+int main()
+{
+  CAN can(PB_8, PB_9, 1000000);
+  CANMessage rxMsg;
+  CANMessage txMsg;
+
+  //NVIC_SetPriority(CAN1_RX0_IRQn, 3);
+  can.filter(CAN_ID, 0xFFE00004, CANStandard, 0);
+  txMsg.id = 0x022; //CAN_MASTER_ID;
+  txMsg.len = txSize;
+  rxMsg.len = rxSize;
+  Timer t;
+
+  while (1)
+  {
+
+    t.start();
+    can.write(txMsg);
+    if (can.read(rxMsg))
+    {
+      t.stop();
+      auto f = chrono::duration<float>(t.elapsed_time()).count();
+      auto s = chrono::duration_cast<chrono::seconds>(t.elapsed_time()).count();
+      auto ms = chrono::duration_cast<chrono::milliseconds>(t.elapsed_time()).count();
+      auto us = t.elapsed_time().count();
+      printf("Timer time: %f s\n", f);
+      printf("Timer time: %llu s\n", s);
+      printf("Timer time: %llu ms\n", ms);
+      printf("Timer time: %llu us\n", us);
+    }
+  }
+}
