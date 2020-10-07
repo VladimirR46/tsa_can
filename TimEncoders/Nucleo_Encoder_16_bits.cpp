@@ -2,28 +2,13 @@
 
 int32_t Soft_32_Counter_TIM2, Soft_32_Counter_TIM3, Soft_32_Counter_TIM4, Soft_32_Counter_TIM5;
 
-
-// void Overflow_Routine_TIM1()
-// {
-//     if(TIM1->SR & 0x0001)
-//     {
-//         // printf("Overflow Routine");
-//         TIM1->SR &= 0xfffe;
-//         if(!(TIM1->CR1&TIM_CR1_DIR))
-//             Soft_32_Counter_TIM2 += 0xffff;
-//         else
-//             Soft_32_Counter_TIM2 -= 0xffff;
-//     }
-// }
-
-
 void Overflow_Routine_TIM2()
 {
-    if(TIM2->SR & 0x0001)
+    if (TIM2->SR & 0x0001)
     {
         // printf("Overflow Routine");
         TIM2->SR &= 0xfffe;
-        if(!(TIM2->CR1&TIM_CR1_DIR))
+        if (!(TIM2->CR1 & TIM_CR1_DIR))
             Soft_32_Counter_TIM2 += 0xffff;
         else
             Soft_32_Counter_TIM2 -= 0xffff;
@@ -32,11 +17,11 @@ void Overflow_Routine_TIM2()
 
 void Overflow_Routine_TIM3()
 {
-    if(TIM3->SR & 0x0001)
+    if (TIM3->SR & 0x0001)
     {
         // printf("Overflow Routine");
         TIM3->SR &= 0xfffe;
-        if(!(TIM3->CR1&TIM_CR1_DIR))
+        if (!(TIM3->CR1 & TIM_CR1_DIR))
             Soft_32_Counter_TIM3 += 0xffff;
         else
             Soft_32_Counter_TIM3 -= 0xffff;
@@ -44,11 +29,11 @@ void Overflow_Routine_TIM3()
 }
 void Overflow_Routine_TIM4()
 {
-    if(TIM4->SR & 0x0001)
+    if (TIM4->SR & 0x0001)
     {
-        // printf("Overflow Routine");
+        printf("Overflow Routine");
         TIM4->SR &= 0xfffe;
-        if(!(TIM4->CR1&TIM_CR1_DIR))
+        if (!(TIM4->CR1 & TIM_CR1_DIR))
             Soft_32_Counter_TIM4 += 0xffff;
         else
             Soft_32_Counter_TIM4 -= 0xffff;
@@ -56,11 +41,11 @@ void Overflow_Routine_TIM4()
 }
 void Overflow_Routine_TIM5()
 {
-    if(TIM5->SR & 0x0001)
+    if (TIM5->SR & 0x0001)
     {
         // printf("Overflow Routine");
         TIM5->SR &= 0xfffe;
-        if(!(TIM5->CR1&TIM_CR1_DIR))
+        if (!(TIM5->CR1 & TIM_CR1_DIR))
             Soft_32_Counter_TIM5 += 0xffff;
         else
             Soft_32_Counter_TIM5 -= 0xffff;
@@ -68,9 +53,9 @@ void Overflow_Routine_TIM5()
 }
 
 namespace mbed
-{   
+{
 
-    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_TypeDef * _TIM)
+    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_TypeDef *_TIM)
     {
         TIM = _TIM;
         // Initialisation of the TIM module as an encoder counter
@@ -82,39 +67,38 @@ namespace mbed
         TIM->SR &= 0xfffe;
 
         // Setting the ISR for the corresponding interrupt vector
-        switch((uint32_t)TIM)
+        switch ((uint32_t)TIM)
         {
-            case TIM2_BASE :
+        case TIM2_BASE:
             NVIC_SetVector(TIM2_IRQn, (uint32_t)&Overflow_Routine_TIM2);
             NVIC_EnableIRQ(TIM2_IRQn);
             Soft_32_Counter_TIM2 = 0;
             break;
-            
-            case TIM3_BASE :
+
+        case TIM3_BASE:
             NVIC_SetVector(TIM3_IRQn, (uint32_t)&Overflow_Routine_TIM3);
             NVIC_EnableIRQ(TIM3_IRQn);
             Soft_32_Counter_TIM3 = 0;
             break;
-            
-            case TIM4_BASE :
+
+        case TIM4_BASE:
             NVIC_SetVector(TIM4_IRQn, (uint32_t)&Overflow_Routine_TIM4);
             NVIC_EnableIRQ(TIM4_IRQn);
             Soft_32_Counter_TIM4 = 0;
             break;
-            
-            case TIM5_BASE :
+
+        case TIM5_BASE:
             NVIC_SetVector(TIM5_IRQn, (uint32_t)&Overflow_Routine_TIM5);
             NVIC_EnableIRQ(TIM5_IRQn);
             Soft_32_Counter_TIM5 = 0;
             break;
-            
-            default :
-            
+
+        default:
+
             break;
         }
-        
     }
-    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_TypeDef * _TIM, uint32_t _maxcount, uint32_t _encmode)
+    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_TypeDef *_TIM, uint32_t _maxcount, uint32_t _encmode)
     {
         TIM = _TIM;
         // Initialisation of the TIM module as an encoder counter
@@ -126,40 +110,39 @@ namespace mbed
         TIM->SR &= 0xfffe;
 
         // Setting the ISR for the corresponding interrupt vector
-        switch((uint32_t)TIM)
+        switch ((uint32_t)TIM)
         {
-            case TIM2_BASE :
+        case TIM2_BASE:
             NVIC_SetVector(TIM2_IRQn, (uint32_t)&Overflow_Routine_TIM2);
             NVIC_EnableIRQ(TIM2_IRQn);
             Soft_32_Counter_TIM2 = 0;
             break;
-            
-            case TIM3_BASE :
+
+        case TIM3_BASE:
             NVIC_SetVector(TIM3_IRQn, (uint32_t)&Overflow_Routine_TIM3);
             NVIC_EnableIRQ(TIM3_IRQn);
             Soft_32_Counter_TIM3 = 0;
             break;
-            
-            case TIM4_BASE :
+
+        case TIM4_BASE:
             NVIC_SetVector(TIM4_IRQn, (uint32_t)&Overflow_Routine_TIM4);
             NVIC_EnableIRQ(TIM4_IRQn);
             Soft_32_Counter_TIM4 = 0;
             break;
-            
-            case TIM5_BASE :
+
+        case TIM5_BASE:
             NVIC_SetVector(TIM5_IRQn, (uint32_t)&Overflow_Routine_TIM5);
             NVIC_EnableIRQ(TIM5_IRQn);
             Soft_32_Counter_TIM5 = 0;
             break;
-            
-            default :
-            
+
+        default:
+
             break;
         }
-        
     }
-    
-    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_Encoder_InitTypeDef * _encoder, TIM_HandleTypeDef * _timer, TIM_TypeDef * _TIM, uint32_t _maxcount, uint32_t _encmode)
+
+    Nucleo_Encoder_16_bits::Nucleo_Encoder_16_bits(TIM_Encoder_InitTypeDef *_encoder, TIM_HandleTypeDef *_timer, TIM_TypeDef *_TIM, uint32_t _maxcount, uint32_t _encmode)
     {
         timer = *_timer;
         encoder = *_encoder;
@@ -173,73 +156,66 @@ namespace mbed
         TIM->SR &= 0xfffe;
 
         // Setting the ISR for the corresponding interrupt vector
-        switch((uint32_t)TIM)
+        switch ((uint32_t)TIM)
         {
-            case TIM2_BASE :
+        case TIM2_BASE:
             NVIC_SetVector(TIM2_IRQn, (uint32_t)&Overflow_Routine_TIM2);
             NVIC_EnableIRQ(TIM2_IRQn);
             Soft_32_Counter_TIM2 = 0;
             break;
-            
-            case TIM3_BASE :
+
+        case TIM3_BASE:
             NVIC_SetVector(TIM3_IRQn, (uint32_t)&Overflow_Routine_TIM3);
             NVIC_EnableIRQ(TIM3_IRQn);
             Soft_32_Counter_TIM3 = 0;
             break;
-            
-            case TIM4_BASE :
+
+        case TIM4_BASE:
             NVIC_SetVector(TIM4_IRQn, (uint32_t)&Overflow_Routine_TIM4);
             NVIC_EnableIRQ(TIM4_IRQn);
             Soft_32_Counter_TIM4 = 0;
             break;
-            
-            case TIM5_BASE :
+
+        case TIM5_BASE:
             NVIC_SetVector(TIM5_IRQn, (uint32_t)&Overflow_Routine_TIM5);
             NVIC_EnableIRQ(TIM5_IRQn);
             Soft_32_Counter_TIM5 = 0;
             break;
-            
-            default :
-            
+
+        default:
+
             break;
         }
-
     }
 
-    
     int32_t Nucleo_Encoder_16_bits::GetCounter()
     {
         uint16_t count = TIM->CNT;
-        switch((uint32_t)TIM)
+        switch ((uint32_t)TIM)
         {
-            case TIM2_BASE :
+        case TIM2_BASE:
             return (int32_t)count + Soft_32_Counter_TIM2;
             break;
-            
-            case TIM3_BASE :
+
+        case TIM3_BASE:
             return (int32_t)count + Soft_32_Counter_TIM3;
             break;
-            
-            case TIM4_BASE :
+
+        case TIM4_BASE:
             return (int32_t)count + Soft_32_Counter_TIM4;
             break;
-            
-            case TIM5_BASE :
+
+        case TIM5_BASE:
             return (int32_t)count + Soft_32_Counter_TIM5;
             break;
         }
-        
+
         return (int32_t)count;
-    } 
-    
-    TIM_HandleTypeDef* Nucleo_Encoder_16_bits::GetTimer()
-    {
-        return &timer;    
     }
 
-    
-    
+    TIM_HandleTypeDef *Nucleo_Encoder_16_bits::GetTimer()
+    {
+        return &timer;
+    }
 
-    
-    
-}
+} // namespace mbed

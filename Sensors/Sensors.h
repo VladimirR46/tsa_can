@@ -9,13 +9,11 @@
 // TODO: This class should collect certaint sensors, decorate them with function getReadings() ...
 // add scales biases and etc
 
-// TODO: Implement DLPF feature 
+// TODO: Implement DLPF feature
 //       Implement getDerivative() feature
 //       Implement getIntegral() feature
 //       Implement setScale, setBias, setSensor feature
-//       Implement addSensor member function that should copy the instance of some class (IMU/Encoder/Force sensor) ...             
-
-
+//       Implement addSensor member function that should copy the instance of some class (IMU/Encoder/Force sensor) ...
 
 class Sensors
 {
@@ -38,16 +36,19 @@ public:
     float getLinearPosition(void);
     // calculate the linear speed using differences
     float getLinearSpeed(float period_s);
-    
+    // Counter
+    uint16_t getLinearCounter(void);
+
     // update force sensor scale
     void setForceScale(float scale);
     // read the data from the force sensor
     float getForce(void);
+    // uint16_t
+    uint16_t getForceU16();
     // calibrate force sensor
     void calibrateForce(int duration);
     // digital low pass filter
     void getDLPF();
-
 
     // class destructor
     ~Sensors();

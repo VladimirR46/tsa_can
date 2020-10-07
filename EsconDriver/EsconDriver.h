@@ -17,6 +17,8 @@ public:
     void motorDisable();
     // get actual motor current
     float getCurrent();
+    // uint16_t
+    uint16_t getCurrentU16();
     // get filtered motor current
     float getFilteredCurrent();
     // set the direction of the motor rotation

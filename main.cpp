@@ -44,7 +44,8 @@ void attime1()
 
 void attime2()
 {
-  printf("Count: %d \n", RRRR);
+  int enc = motor_encoder.GetCounter();
+  printf("Count: %d \n", enc);
   RRRR = 0;
 }
 

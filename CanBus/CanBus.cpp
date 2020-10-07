@@ -8,7 +8,7 @@ CanBus::CanBus(PinName rd, PinName td, int hz, Sensors *sensors, EsconDriver *dr
                                                                                         sensors(sensors),
                                                                                         driver(driver)
 {
-    NVIC_SetPriority(CAN1_RX0_IRQn, 3);
+    //NVIC_SetPriority(CAN1_RX0_IRQn, 3);
     can.filter(CAN_ID, 0xFFE00004, CANStandard, 0);
     txMsg.id = CAN_MASTER_ID;
     txMsg.len = txSize;
@@ -77,25 +77,21 @@ void CanBus::set_current_callback(CANMessage &msg)
     driver->setCurrent(current);
 
     // reply
-    float m_pos = 22.2;  //sensors->getMotorPosition();
-    float l_pos = 33.44; //sensors->getLinearPosition();
+    uint16_t lin_c = sensors->getLinearCounter();
+    uint16_t m_e = 3234;
+    uint8_t m_count = 250;
+    uint16_t f_sensor = sensors->getForceU16();
+    uint16_t m_current = driver->getCurrentU16();
 
-    uint32_t floatBytes;
-    static_assert(sizeof(m_pos) == sizeof(current));
-    std::memcpy(&floatBytes, &m_pos, sizeof floatBytes);
-    txMsg.data[0] = floatBytes;
-    txMsg.data[1] = floatBytes >> 8;
-    txMsg.data[2] = floatBytes >> 16;
-    txMsg.data[3] = floatBytes >> 24;
+    txMsg.data[0] = lin_c & 0xFF;
+    txMsg.data[1] = ((lin_c & 0xF00) >> 8) + ((m_e & 0x0F) << 4);
+    txMsg.data[2] = (m_e & 0xFF0) >> 4;
+    txMsg.data[3] = m_count;
+    txMsg.data[4] = f_sensor & 0xFF;
+    txMsg.data[5] = (f_sensor & 0xFF00) >> 8;
+    txMsg.data[6] = m_current & 0xFF;
+    txMsg.data[7] = (m_current & 0xFF00) >> 8;
 
-    static_assert(sizeof(l_pos) == sizeof(current));
-    std::memcpy(&floatBytes, &l_pos, sizeof floatBytes);
-    txMsg.data[4] = floatBytes;
-    txMsg.data[5] = floatBytes >> 8;
-    txMsg.data[6] = floatBytes >> 16;
-    txMsg.data[7] = floatBytes >> 24;
-
-    //ThisThread::sleep_for(1ms);
     can.write(txMsg);
 }
 

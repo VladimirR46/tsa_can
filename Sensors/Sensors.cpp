@@ -47,6 +47,11 @@ float Sensors::getLinearPosition(void)
     return lin_pos_curr;
 }
 
+uint16_t Sensors::getLinearCounter(void)
+{
+    return linear_encoder->GetCounter();
+}
+
 float Sensors::getLinearSpeed(float period_s)
 {
     lin_vel = (lin_pos_curr - lin_pos_prev) / period_s; // in rad/s
@@ -62,10 +67,15 @@ void Sensors::setForceScale(float scale)
 
 float Sensors::getForce(void)
 {
-    force_data = force_sensor->read(); // read data from force sensor
+    force_data = force_sensor->read();                                     // read data from force sensor
     force_value = force_scale * (force_data - force_bias) + weight_offset; // get force in N
 
     return force_value;
+}
+
+uint16_t Sensors::getForceU16()
+{
+    return force_sensor->read_u16();
 }
 
 void Sensors::calibrateForce(int measurements_number)
@@ -77,10 +87,9 @@ void Sensors::calibrateForce(int measurements_number)
     printf("Estimated force bias = %f\n", force_bias);
 }
 
-void Sensors::getDLPF(){
+void Sensors::getDLPF()
+{
 }
-
-
 
 // class destructor
 Sensors::~Sensors()
