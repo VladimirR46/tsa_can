@@ -501,8 +501,14 @@
                 "${workspaceFolder}/mbed-os/targets/TARGET_STM/TARGET_STM32F7/STM32Cube_FW/STM32F7xx_HAL_Driver/Legacy/*",
                 "${workspaceFolder}/mbed-os/targets/TARGET_STM/TARGET_STM32F7/TARGET_STM32F767xI/*",
                 "${workspaceFolder}/mbed-os/targets/TARGET_STM/TARGET_STM32F7/TARGET_STM32F767xI/TARGET_NUCLEO_F767ZI/*",
-                "/home/vladimir/example_app/mbed-os/*"
+                "/home/vladimir/tsa_can/mbed-os/*"
             ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/vladimir/tsa_can"
+                ]
+            },
             "defines": [
                 "DEVICE_CAN=1",
                 "DEVICE_ANALOGOUT=1",
