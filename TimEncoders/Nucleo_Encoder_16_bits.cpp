@@ -31,7 +31,7 @@ void Overflow_Routine_TIM4()
 {
     if (TIM4->SR & 0x0001)
     {
-        printf("Overflow Routine");
+        //printf("Overflow Routine \n");
         TIM4->SR &= 0xfffe;
         if (!(TIM4->CR1 & TIM_CR1_DIR))
             Soft_32_Counter_TIM4 += 0xffff;

@@ -1,8 +1,9 @@
 #include "mbed.h"
-using namespace std::chrono;
+//using namespace std::chrono;
 
 #include "EsconDriver/EsconDriver.h"
 #include "CanBus/CanBus.h"
+#include "Controller/Controller.h"
 #include "TimEncoders/Nucleo_Encoder_16_bits.h"
 
 // DRIVER //
@@ -30,30 +31,21 @@ Nucleo_Encoder_16_bits linear_encoder(TIM3);
 AnalogIn force_sensor(PF_9);
 Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor);
 
-CanBus can(PB_8, PB_9, 1000000, &sensors, &driver);
+Controller controller(&sensors, &driver);
 
-Ticker timer1;
-Ticker timer2;
+CanBus can(PB_8, PB_9, 1000000, &controller);
 
-uint32_t RRRR = 0;
+Ticker ticker;
 
-void attime1()
+// 40 kHz
+void TickerCallback()
 {
-  RRRR++;
-}
-
-void attime2()
-{
-  int enc = motor_encoder.GetCounter();
-  printf("Count: %d \n", enc);
-  RRRR = 0;
+  controller.update();
 }
 
 int main()
 {
-
-  timer1.attach(&attime1, 25us);
-  timer2.attach(&attime2, 1.0);
+  ticker.attach(&TickerCallback, 25us);
 
   while (1)
   {

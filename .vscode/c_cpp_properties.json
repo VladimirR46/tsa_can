@@ -504,7 +504,7 @@
                 "/home/vladimir/tsa_can/mbed-os/*"
             ],
             "browse": {
-                "limitSymbolsToIncludedHeaders": true,
+                //"limitSymbolsToIncludedHeaders": true,
                 "path": [
                     "/home/vladimir/tsa_can"
                 ]

@@ -4,9 +4,8 @@ static constexpr uint8_t NUM_NODE_ID_BITS = 6;
 static constexpr uint8_t NUM_CMD_ID_BITS = 11 - NUM_NODE_ID_BITS;
 
 // class constructor
-CanBus::CanBus(PinName rd, PinName td, int hz, Sensors *sensors, EsconDriver *driver) : can(rd, td, hz),
-                                                                                        sensors(sensors),
-                                                                                        driver(driver)
+CanBus::CanBus(PinName rd, PinName td, int hz, Controller *controller) : can(rd, td, hz),
+                                                                         controller(controller)
 {
     //NVIC_SetPriority(CAN1_RX0_IRQn, 3);
     can.filter(CAN_ID, 0xFFE00004, CANStandard, 0);
@@ -41,10 +40,29 @@ void CanBus::onMsgReceived()
         case MSG_SET_CURRENT:
             set_current_callback(rxMsg);
             break;
+        case MSG_WRITE_PID_RAM:
+            write_pid_ram(rxMsg);
+            break;
         default:
             break;
         }
     }
+}
+
+void CanBus::write_pid_ram(CANMessage &msg)
+{
+    txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
+    txMsg.id += MSG_MOTOR_ON;
+
+    uint32_t currentBytes = (msg.data[3] << 24) | (msg.data[2] << 16) | (msg.data[1] << 8) | msg.data[0];
+    static_assert(sizeof(currentBytes) == sizeof(controller->parameters.kp));
+    std::memcpy(&controller->parameters.kp, &currentBytes, sizeof currentBytes);
+
+    currentBytes = (msg.data[7] << 24) | (msg.data[6] << 16) | (msg.data[5] << 8) | msg.data[4];
+    static_assert(sizeof(currentBytes) == sizeof(controller->parameters.kd));
+    std::memcpy(&controller->parameters.kd, &currentBytes, sizeof currentBytes);
+
+    can.write(txMsg);
 }
 
 void CanBus::set_motor_on(CANMessage &msg)
@@ -52,7 +70,7 @@ void CanBus::set_motor_on(CANMessage &msg)
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
     txMsg.id += MSG_MOTOR_ON;
 
-    driver->motorEnable();
+    controller->driver->motorEnable();
     can.write(txMsg);
 }
 
@@ -61,7 +79,7 @@ void CanBus::set_motor_off(CANMessage &msg)
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
     txMsg.id += MSG_MOTOR_OFF;
 
-    driver->motorDisable();
+    controller->driver->motorDisable();
     can.write(txMsg);
 }
 
@@ -72,10 +90,10 @@ void CanBus::set_current_callback(CANMessage &msg)
 
     uint32_t currentBytes = (msg.data[3] << 24) | (msg.data[2] << 16) | (msg.data[1] << 8) | msg.data[0];
     float current = 0.0f;
-    static_assert(sizeof(currentBytes) == sizeof(current));
-    std::memcpy(&current, &currentBytes, sizeof currentBytes);
-    driver->setCurrent(current);
+    static_assert(sizeof(currentBytes) == sizeof(controller->parameters.t_ff));
+    std::memcpy(&controller->parameters.t_ff, &currentBytes, sizeof currentBytes);
 
+    /*
     // reply
     uint16_t lin_c = sensors->getLinearCounter();
     uint16_t m_e = 3234;
@@ -83,6 +101,7 @@ void CanBus::set_current_callback(CANMessage &msg)
     uint16_t f_sensor = sensors->getForceU16();
     uint16_t m_current = driver->getCurrentU16();
 
+    
     txMsg.data[0] = lin_c & 0xFF;
     txMsg.data[1] = ((lin_c & 0xF00) >> 8) + ((m_e & 0x0F) << 4);
     txMsg.data[2] = (m_e & 0xFF0) >> 4;
@@ -91,7 +110,7 @@ void CanBus::set_current_callback(CANMessage &msg)
     txMsg.data[5] = (f_sensor & 0xFF00) >> 8;
     txMsg.data[6] = m_current & 0xFF;
     txMsg.data[7] = (m_current & 0xFF00) >> 8;
-
+*/
     can.write(txMsg);
 }
 

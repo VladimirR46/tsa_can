@@ -9,8 +9,7 @@
 
 #include <stdio.h>
 #include "mbed.h"
-#include "Sensors/Sensors.h"
-#include "EsconDriver/EsconDriver.h"
+#include "Controller/Controller.h"
 
 class CanBus
 {
@@ -19,11 +18,12 @@ public:
     {
         MSG_MOTOR_ON,
         MSG_MOTOR_OFF,
-        MSG_SET_CURRENT
+        MSG_SET_CURRENT,
+        MSG_WRITE_PID_RAM
     };
 
     // class constructor
-    CanBus(PinName rd, PinName td, int hz, Sensors *sensors, EsconDriver *driver);
+    CanBus(PinName rd, PinName td, int hz, Controller *controller);
 
     void onMsgReceived();
 
@@ -31,6 +31,7 @@ public:
     void set_motor_on(CANMessage &msg);
     void set_motor_off(CANMessage &msg);
     void set_current_callback(CANMessage &msg);
+    void write_pid_ram(CANMessage &msg);
 
     // Utility functions
     static uint32_t get_node_id(uint32_t msgID);
@@ -44,8 +45,7 @@ private:
     CANMessage rxMsg;
     CANMessage txMsg;
 
-    Sensors *sensors;
-    EsconDriver *driver;
+    Controller *controller;
 };
 
 #endif
