@@ -1,13 +1,13 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "mbed.h"
 #include <stdio.h>
 #include <cmath>
 #include "Sensors/Sensors.h"
 #include "EsconDriver/EsconDriver.h"
 
 #define HZ 40000
-#define PERIOD (1 / HZ)
 
 typedef struct
 {
@@ -22,7 +22,7 @@ public:
     ControllerStruct parameters;
 
     // class constructor
-    Controller(Sensors *sensors, EsconDriver *driver);
+    Controller(Sensors *sensors, EsconDriver *driver, PinName hz);
     // set the controller parameters
 
     void reset_param();
@@ -35,6 +35,7 @@ public:
     ~Controller();
 
 private:
+    DigitalOut HZ_PIN;
 };
 
 #endif

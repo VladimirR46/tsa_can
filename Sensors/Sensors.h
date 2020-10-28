@@ -1,6 +1,8 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
+#define FILTER_SAMPLE 32
+
 #include <stdio.h>
 // #include <cmath>
 
@@ -29,6 +31,9 @@ public:
     float getMotorPosition(void);
     // calculate the motor speed using differences
     float getMotorSpeed(float period_s);
+
+    uint16_t getMotorCountOneTurn();
+    int16_t getMotorTurnCount();
 
     // update linear encoder scale
     void setLinearScale(float scale);
@@ -60,7 +65,7 @@ private:
 
     // Linear encoder settings
     int mot_enc_cpt = 1024; // counts per turn
-    float mot_enc_scale = 2. * M_PI / (mot_enc_cpt * 4);
+    float mot_enc_scale = 2.0 * M_PI / (mot_enc_cpt * 4.0);
     int mot_enc_count = 0;
     int mot_enc_bias = 0;   // in counts
     float mot_pos_curr = 0; // in rad
@@ -82,6 +87,9 @@ private:
     float weight_offset = 3.0;
     float force_data = 0;
     float force_value = 0; // in N
+
+    float f_buff[FILTER_SAMPLE] = {0.0f};
+    uint8_t f_index = 0;
 };
 
 #endif

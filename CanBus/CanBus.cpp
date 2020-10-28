@@ -7,7 +7,8 @@ static constexpr uint8_t NUM_CMD_ID_BITS = 11 - NUM_NODE_ID_BITS;
 CanBus::CanBus(PinName rd, PinName td, int hz, Controller *controller) : can(rd, td, hz),
                                                                          controller(controller)
 {
-    //NVIC_SetPriority(CAN1_RX0_IRQn, 3);
+
+    NVIC_SetPriority(CAN1_RX0_IRQn, 1);
     can.filter(CAN_ID, 0xFFE00004, CANStandard, 0);
     txMsg.id = CAN_MASTER_ID;
     txMsg.len = txSize;
@@ -93,24 +94,22 @@ void CanBus::set_current_callback(CANMessage &msg)
     static_assert(sizeof(currentBytes) == sizeof(controller->parameters.t_ff));
     std::memcpy(&controller->parameters.t_ff, &currentBytes, sizeof currentBytes);
 
-    /*
     // reply
-    uint16_t lin_c = sensors->getLinearCounter();
-    uint16_t m_e = 3234;
-    uint8_t m_count = 250;
-    uint16_t f_sensor = sensors->getForceU16();
-    uint16_t m_current = driver->getCurrentU16();
+    uint16_t m_e = controller->sensors->getMotorCountOneTurn(); // 0    ... +1024
+    int16_t m_count = controller->sensors->getMotorTurnCount(); // -512 ... +512
+    uint16_t lin_e = controller->sensors->getLinearCounter();   // 0    ... +4096
+    uint16_t f_sensor = controller->sensors->getForceU16();     // 0    ... 65535
+    uint16_t m_current = controller->driver->getCurrentU16();   // 0    ... 65535
 
-    
-    txMsg.data[0] = lin_c & 0xFF;
-    txMsg.data[1] = ((lin_c & 0xF00) >> 8) + ((m_e & 0x0F) << 4);
-    txMsg.data[2] = (m_e & 0xFF0) >> 4;
-    txMsg.data[3] = m_count;
-    txMsg.data[4] = f_sensor & 0xFF;
-    txMsg.data[5] = (f_sensor & 0xFF00) >> 8;
+    txMsg.data[0] = m_e & 0xFF;
+    txMsg.data[1] = ((m_e & 0x300) >> 8) + ((m_count & 0x3F) << 2);
+    txMsg.data[2] = ((m_count & 0x3C0) >> 6) + ((lin_e & 0x0F) << 4);
+    txMsg.data[3] = (lin_e & 0xFF0) >> 4;
+    txMsg.data[4] = *(uint8_t *)(&f_sensor); // f_sensor & 0xFF;
+    txMsg.data[5] = *((uint8_t *)(&f_sensor) + 1);
     txMsg.data[6] = m_current & 0xFF;
     txMsg.data[7] = (m_current & 0xFF00) >> 8;
-*/
+
     can.write(txMsg);
 }
 

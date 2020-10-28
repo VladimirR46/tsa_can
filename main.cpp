@@ -1,10 +1,17 @@
 #include "mbed.h"
-//using namespace std::chrono;
-
 #include "EsconDriver/EsconDriver.h"
 #include "CanBus/CanBus.h"
 #include "Controller/Controller.h"
 #include "TimEncoders/Nucleo_Encoder_16_bits.h"
+
+#define M_PI 3.14159265358979323846
+
+BufferedSerial pc(USBTX, USBRX, 115200); // tx, rx
+
+FileHandle *mbed::mbed_override_console(int fd)
+{
+  return &pc;
+}
 
 // DRIVER //
 PinName driverDigitalPins[] = {
@@ -20,6 +27,8 @@ PinName driverAnalogPins[] = {
     PA_4  // motor setpoint output
 };
 
+int Hz_count = 0;
+
 /* Initialize the EsconDriver */
 EsconDriver driver(driverDigitalPins, driverAnalogPins);
 
@@ -31,21 +40,26 @@ Nucleo_Encoder_16_bits linear_encoder(TIM3);
 AnalogIn force_sensor(PF_9);
 Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor);
 
-Controller controller(&sensors, &driver);
+Controller controller(&sensors, &driver, PG_0);
 
 CanBus can(PB_8, PB_9, 1000000, &controller);
 
 Ticker ticker;
+Ticker ticker2;
 
-// 40 kHz
 void TickerCallback()
 {
-  controller.update();
+  //printf("Hz: %d \n", Hz_count);
+
+  //printf("Timer time: %llu us\n", controller.us);
+  Hz_count = 0;
 }
 
 int main()
 {
-  ticker.attach(&TickerCallback, 25us);
+
+  ticker.attach(callback(&controller, &Controller::update), 50us); // 25us
+  ticker2.attach(&TickerCallback, 1);
 
   while (1)
   {

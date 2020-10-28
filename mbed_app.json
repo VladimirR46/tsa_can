@@ -4,7 +4,9 @@
     ],
     "target_overrides": {
         "*": {
-            "target.c_lib": "small"
+            "target.printf_lib": "std",
+            "platform.minimal-printf-enable-floating-point": true,
+            "platform.minimal-printf-set-floating-point-max-decimals": 3
         }
     }
 }

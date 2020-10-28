@@ -27,9 +27,32 @@ float Sensors::getMotorPosition(void)
 
 float Sensors::getMotorSpeed(float period_s)
 {
-    mot_vel = (mot_pos_curr - mot_pos_prev) / period_s; // in rad/s
+    f_buff[f_index] = mot_pos_curr;
+
+    if (f_index >= FILTER_SAMPLE - 1)
+        f_index = 0;
+    else
+        f_index++;
+
+    mot_vel = (mot_pos_curr - f_buff[f_index]) / (FILTER_SAMPLE * period_s);
+
+    //mot_vel = (mot_pos_curr - mot_pos_prev) / period_s; // in rad/s
 
     return mot_vel;
+}
+
+uint16_t Sensors::getMotorCountOneTurn()
+{
+    return (abs(motor_encoder->GetCounter()) / 4) % mot_enc_cpt;
+}
+
+int16_t Sensors::getMotorTurnCount() // 9 bit
+{
+    int32_t motor_count = motor_encoder->GetCounter();
+    int16_t count = motor_count / (mot_enc_cpt * 4);
+    if (motor_count < 0)
+        count -= 1;
+    return count;
 }
 
 void Sensors::setLinearScale(float scale)
