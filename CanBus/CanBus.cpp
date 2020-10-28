@@ -44,10 +44,50 @@ void CanBus::onMsgReceived()
         case MSG_WRITE_PID_RAM:
             write_pid_ram(rxMsg);
             break;
+        case MSG_READ_PID:
+            read_pid_callback(rxMsg);
+            break;
+        case MSG_SET_POSITION:
+            set_position_callback(rxMsg);
+            break;
         default:
             break;
         }
     }
+}
+
+void set_position_callback(CANMessage &msg)
+{
+    txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
+    txMsg.id += MSG_MOTOR_ON;
+
+    uint32_t currentBytes = (msg.data[3] << 24) | (msg.data[2] << 16) | (msg.data[1] << 8) | msg.data[0];
+    static_assert(sizeof(currentBytes) == sizeof(controller->parameters.kp));
+    std::memcpy(&controller->parameters.p_des, &currentBytes, sizeof currentBytes);
+
+    can.write(txMsg);
+}
+
+void CanBus::read_pid_callback(CANMessage &msg)
+{
+    txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
+    txMsg.id += MSG_MOTOR_ON;
+
+    uint32_t floatBytes;
+    std::memcpy(&floatBytes, &controller->parameters.kp, sizeof floatBytes);
+    txMsg.data[0] = floatBytes;
+    txMsg.data[1] = floatBytes >> 8;
+    txMsg.data[2] = floatBytes >> 16;
+    txMsg.data[3] = floatBytes >> 24;
+
+    floatBytes;
+    std::memcpy(&floatBytes, &controller->parameters.kd, sizeof floatBytes);
+    txMsg.data[4] = floatBytes;
+    txMsg.data[5] = floatBytes >> 8;
+    txMsg.data[6] = floatBytes >> 16;
+    txMsg.data[7] = floatBytes >> 24;
+
+    can.write(txMsg);
 }
 
 void CanBus::write_pid_ram(CANMessage &msg)

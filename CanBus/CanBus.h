@@ -19,7 +19,9 @@ public:
         MSG_MOTOR_ON,
         MSG_MOTOR_OFF,
         MSG_SET_CURRENT,
-        MSG_WRITE_PID_RAM
+        MSG_WRITE_PID_RAM,
+        MSG_READ_PID,
+        MSG_SET_POSITION
     };
 
     // class constructor
@@ -32,6 +34,8 @@ public:
     void set_motor_off(CANMessage &msg);
     void set_current_callback(CANMessage &msg);
     void write_pid_ram(CANMessage &msg);
+    void read_pid_callback(CANMessage &msg);
+    void set_position_callback(CANMessage &msg);
 
     // Utility functions
     static uint32_t get_node_id(uint32_t msgID);

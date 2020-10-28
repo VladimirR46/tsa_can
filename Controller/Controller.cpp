@@ -13,21 +13,21 @@ void Controller::reset_param()
 {
     parameters.p_des = 0;
     parameters.v_des = 0;
-    parameters.kp = 0;
-    parameters.kd = 0;
-    parameters.t_ff = 0;
+    parameters.kp = 0.0;
+    parameters.kd = 0.0;
+    parameters.t_ff = 0.0;
 }
 
 void Controller::control()
 {
-
     float p_error = parameters.p_des - sensors->getMotorPosition();
     float v_error = parameters.v_des - sensors->getMotorSpeed(0.00005f);
 
-    float current_ref = parameters.kp * p_error + parameters.kd * v_error; //+ parameters.t_ff;
+    float current_ref = parameters.kp * p_error + parameters.kd * v_error + parameters.t_ff;
 
+    //printf("cur: %.4f \n", current_ref);
     //printf("kp: %.5f kd: %.5f e: %.4f cur_p: %.4f cur: %.4f \n", parameters.kp, parameters.kd, error, sensors->getMotorSpeed(0.025), current_ref);
-    if (fabs(current_ref) > 0.3)
+    if (fabs(current_ref) > 0.5)
         current_ref = 0.0;
     driver->setCurrent(current_ref);
 
