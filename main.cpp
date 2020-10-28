@@ -27,8 +27,6 @@ PinName driverAnalogPins[] = {
     PA_4  // motor setpoint output
 };
 
-int Hz_count = 0;
-
 /* Initialize the EsconDriver */
 EsconDriver driver(driverDigitalPins, driverAnalogPins);
 
@@ -45,21 +43,11 @@ Controller controller(&sensors, &driver, PG_0);
 CanBus can(PB_8, PB_9, 1000000, &controller);
 
 Ticker ticker;
-Ticker ticker2;
-
-void TickerCallback()
-{
-  //printf("Hz: %d \n", Hz_count);
-
-  //printf("Timer time: %llu us\n", controller.us);
-  Hz_count = 0;
-}
 
 int main()
 {
 
   ticker.attach(callback(&controller, &Controller::update), 50us); // 25us
-  ticker2.attach(&TickerCallback, 1);
 
   while (1)
   {
