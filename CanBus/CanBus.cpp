@@ -9,7 +9,7 @@ CanBus::CanBus(PinName rd, PinName td, int hz, Controller *controller) : can(rd,
 {
 
     NVIC_SetPriority(CAN1_RX0_IRQn, 1);
-    can.filter(CAN_ID, 0xFFE00004, CANStandard, 0);
+    can.filter(CAN_ID, 0xFFE00000, CANStandard, 0); //0xFFE00004
     txMsg.id = CAN_MASTER_ID;
     txMsg.len = txSize;
     rxMsg.len = rxSize;
@@ -56,14 +56,30 @@ void CanBus::onMsgReceived()
     }
 }
 
-void set_position_callback(CANMessage &msg)
+void CanBus::set_position_callback(CANMessage &msg)
 {
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
-    txMsg.id += MSG_MOTOR_ON;
+    txMsg.id += MSG_SET_POSITION;
 
     uint32_t currentBytes = (msg.data[3] << 24) | (msg.data[2] << 16) | (msg.data[1] << 8) | msg.data[0];
     static_assert(sizeof(currentBytes) == sizeof(controller->parameters.kp));
     std::memcpy(&controller->parameters.p_des, &currentBytes, sizeof currentBytes);
+
+    // reply
+    uint16_t m_e = controller->sensors->getMotorCountOneTurn(); // 0    ... +1024
+    int16_t m_count = controller->sensors->getMotorTurnCount(); // -512 ... +512
+    uint16_t lin_e = controller->sensors->getLinearCounter();   // 0    ... +4096
+    uint16_t f_sensor = controller->sensors->getForceU16();     // 0    ... 65535
+    uint16_t m_current = controller->driver->getCurrentU16();   // 0    ... 65535
+
+    txMsg.data[0] = m_e & 0xFF;
+    txMsg.data[1] = ((m_e & 0x300) >> 8) + ((m_count & 0x3F) << 2);
+    txMsg.data[2] = ((m_count & 0x3C0) >> 6) + ((lin_e & 0x0F) << 4);
+    txMsg.data[3] = (lin_e & 0xFF0) >> 4;
+    txMsg.data[4] = *(uint8_t *)(&f_sensor); // f_sensor & 0xFF;
+    txMsg.data[5] = *((uint8_t *)(&f_sensor) + 1);
+    txMsg.data[6] = m_current & 0xFF;
+    txMsg.data[7] = (m_current & 0xFF00) >> 8;
 
     can.write(txMsg);
 }
@@ -71,7 +87,7 @@ void set_position_callback(CANMessage &msg)
 void CanBus::read_pid_callback(CANMessage &msg)
 {
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
-    txMsg.id += MSG_MOTOR_ON;
+    txMsg.id += MSG_READ_PID;
 
     uint32_t floatBytes;
     std::memcpy(&floatBytes, &controller->parameters.kp, sizeof floatBytes);
@@ -93,7 +109,7 @@ void CanBus::read_pid_callback(CANMessage &msg)
 void CanBus::write_pid_ram(CANMessage &msg)
 {
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
-    txMsg.id += MSG_MOTOR_ON;
+    txMsg.id += MSG_WRITE_PID_RAM;
 
     uint32_t currentBytes = (msg.data[3] << 24) | (msg.data[2] << 16) | (msg.data[1] << 8) | msg.data[0];
     static_assert(sizeof(currentBytes) == sizeof(controller->parameters.kp));
@@ -158,7 +174,7 @@ uint32_t CanBus::get_node_id(uint32_t msgID)
     return (msgID >> NUM_CMD_ID_BITS); // Upper 6 or more bits
 }
 
-uint8_t CanBus::get_cmd_id(uint32_t msgID)
+uint32_t CanBus::get_cmd_id(uint32_t msgID)
 {
     return (msgID & 0x01F); // Bottom 5 bits
 }

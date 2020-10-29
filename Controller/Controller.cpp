@@ -25,7 +25,7 @@ void Controller::control()
 
     float current_ref = parameters.kp * p_error + parameters.kd * v_error + parameters.t_ff;
 
-    //printf("cur: %.4f \n", current_ref);
+    //printf("p_des: %.4f \n", parameters.p_des);
     //printf("kp: %.5f kd: %.5f e: %.4f cur_p: %.4f cur: %.4f \n", parameters.kp, parameters.kd, error, sensors->getMotorSpeed(0.025), current_ref);
     if (fabs(current_ref) > 0.5)
         current_ref = 0.0;

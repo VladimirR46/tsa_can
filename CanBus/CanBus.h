@@ -39,7 +39,7 @@ public:
 
     // Utility functions
     static uint32_t get_node_id(uint32_t msgID);
-    static uint8_t get_cmd_id(uint32_t msgID);
+    static uint32_t get_cmd_id(uint32_t msgID);
 
     // class destructor
     ~CanBus();
