@@ -12,6 +12,8 @@
         "string_view": "cpp",
         "mstd_iterator": "cpp",
         "mstd_atomic": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp"
     }
 }

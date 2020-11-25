@@ -3,6 +3,7 @@
 #include "CanBus/CanBus.h"
 #include "Controller/Controller.h"
 #include "TimEncoders/Nucleo_Encoder_16_bits.h"
+#include "MPU9250.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -44,12 +45,17 @@ CanBus can(PB_8, PB_9, 1000000, &controller);
 
 Ticker ticker;
 
+MPU9250 mpu9250(PF_0, PF_1);
+
 int main()
 {
+  mpu9250.InitAll();
 
   ticker.attach(callback(&controller, &Controller::update), 50us); // 25us
 
   while (1)
   {
+    // If intPin goes high, all data registers have new data
+    mpu9250.ReadAll();
   }
 }
