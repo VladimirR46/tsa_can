@@ -7,6 +7,7 @@
 // #include <cmath>
 
 #include "TimEncoders/Nucleo_Encoder_16_bits.h"
+#include "MPU9250.h"
 
 // TODO: This class should collect certaint sensors, decorate them with function getReadings() ...
 // add scales biases and etc
@@ -23,7 +24,12 @@ public:
     // class constructor
     Sensors(Nucleo_Encoder_16_bits *motor_encoder,
             Nucleo_Encoder_16_bits *linear_encoder,
-            AnalogIn *force_sensor);
+            AnalogIn *force_sensor,
+            MPU9250 *imu);
+
+    // imu
+    void readIMU();
+    void getIMUAccel(float *acell);
 
     // update motor encoder scale
     void setMotorScale(float scale);
@@ -62,6 +68,7 @@ private:
     Nucleo_Encoder_16_bits *motor_encoder;
     Nucleo_Encoder_16_bits *linear_encoder;
     AnalogIn *force_sensor;
+    MPU9250 *imu;
 
     // Linear encoder settings
     int mot_enc_cpt = 1024; // counts per turn

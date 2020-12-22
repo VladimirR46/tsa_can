@@ -21,7 +21,8 @@ public:
         MSG_SET_CURRENT,
         MSG_WRITE_PID_RAM,
         MSG_READ_PID,
-        MSG_SET_POSITION
+        MSG_SET_POSITION,
+        MSG_IMU_ACCEL
     };
 
     // class constructor
@@ -36,6 +37,7 @@ public:
     void write_pid_ram(CANMessage &msg);
     void read_pid_callback(CANMessage &msg);
     void set_position_callback(CANMessage &msg);
+    void read_imu_accellerometer(CANMessage &msg);
 
     // Utility functions
     static uint32_t get_node_id(uint32_t msgID);

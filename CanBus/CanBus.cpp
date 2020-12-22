@@ -50,12 +50,32 @@ void CanBus::onMsgReceived()
         case MSG_SET_POSITION:
             set_position_callback(rxMsg);
             break;
+        case MSG_IMU_ACCEL:
+            read_imu_accellerometer(rxMsg);
+            break;
         default:
             break;
         }
     }
 }
 
+void CanBus::read_imu_accellerometer(CANMessage &msg)
+{
+    txMsg.id = CAN_ID << NUM_CMD_ID_BITS;
+    txMsg.id += MSG_IMU_ACCEL;
+
+    float Accel[3]; // x/y/z accel register data stored here
+    controller->sensors->getIMUAccel(&Accel[0]);
+
+    uint32_t floatBytes;
+    std::memcpy(&floatBytes, &Accel[2], sizeof floatBytes);
+    txMsg.data[0] = floatBytes;
+    txMsg.data[1] = floatBytes >> 8;
+    txMsg.data[2] = floatBytes >> 16;
+    txMsg.data[3] = floatBytes >> 24;
+
+    can.write(txMsg);
+}
 void CanBus::set_position_callback(CANMessage &msg)
 {
     txMsg.id = CAN_ID << NUM_CMD_ID_BITS;

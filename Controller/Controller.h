@@ -22,7 +22,7 @@ public:
     ControllerStruct parameters;
 
     // class constructor
-    Controller(Sensors *sensors, EsconDriver *driver, PinName hz);
+    Controller(Sensors *sensors, EsconDriver *driver);
     // set the controller parameters
 
     void reset_param();
@@ -35,7 +35,6 @@ public:
     ~Controller();
 
 private:
-    DigitalOut HZ_PIN;
 };
 
 #endif

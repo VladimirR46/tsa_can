@@ -1,9 +1,8 @@
 #include "Controller.h"
 
 // class constructor
-Controller::Controller(Sensors *sensors, EsconDriver *driver, PinName hz) : sensors(sensors),
-                                                                            driver(driver),
-                                                                            HZ_PIN(hz)
+Controller::Controller(Sensors *sensors, EsconDriver *driver) : sensors(sensors),
+                                                                driver(driver)
 {
     printf("Controller object was constructed.\n");
     reset_param();
@@ -31,12 +30,12 @@ void Controller::control()
         current_ref = 0.0;
     driver->setCurrent(current_ref);
 
-    HZ_PIN = !HZ_PIN;
     //printf("kp: %f p_des %f m_pos %f kd %f v_des %f m_v %f t_ff %f \n", parameters.kp, parameters.p_des, sensors->getMotorPosition(), parameters.kd, parameters.v_des, sensors->getMotorSpeed(1.0 / HZ), parameters.t_ff);
 }
 
 void Controller::update()
 {
+    //sensors->readIMU();
     control();
 }
 

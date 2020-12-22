@@ -14,6 +14,8 @@ FileHandle *mbed::mbed_override_console(int fd)
   return &pc;
 }
 
+//Serial usb(USBTX, USBRX, 115200);
+
 // DRIVER //
 PinName driverDigitalPins[] = {
     PE_3, // motor enable output: 0 - disable, 1 - enable
@@ -37,25 +39,26 @@ Nucleo_Encoder_16_bits linear_encoder(TIM3);
 
 // ForceSensor
 AnalogIn force_sensor(PF_9);
-Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor);
+MPU9250 mpu9250(PF_0, PF_1);
 
-Controller controller(&sensors, &driver, PG_0);
+Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor, &mpu9250);
+
+Controller controller(&sensors, &driver);
 
 CanBus can(PB_8, PB_9, 1000000, &controller);
 
 Ticker ticker;
 
-MPU9250 mpu9250(PF_0, PF_1);
+void SerialRead()
+{
+}
 
 int main()
 {
-  mpu9250.InitAll();
 
   ticker.attach(callback(&controller, &Controller::update), 50us); // 25us
 
   while (1)
   {
-    // If intPin goes high, all data registers have new data
-    mpu9250.ReadAll();
   }
 }

@@ -8,6 +8,8 @@ MPU9250::MPU9250(PinName sda, PinName scl)
 {
     i2c_ = new I2C(sda, scl);
     i2c_->frequency(400000);
+    ThisThread::sleep_for(10ms);
+    InitAll();
 }
 
 //******************************************************************************

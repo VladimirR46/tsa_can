@@ -3,11 +3,25 @@
 // class constructor
 Sensors::Sensors(Nucleo_Encoder_16_bits *motor_encoder,
                  Nucleo_Encoder_16_bits *linear_encoder,
-                 AnalogIn *force_sensor) : motor_encoder(motor_encoder),
-                                           linear_encoder(linear_encoder),
-                                           force_sensor(force_sensor)
+                 AnalogIn *force_sensor,
+                 MPU9250 *imu) : motor_encoder(motor_encoder),
+                                 linear_encoder(linear_encoder),
+                                 force_sensor(force_sensor),
+                                 imu(imu)
 {
     printf("Sensors object was constructed.\n");
+}
+
+void Sensors::readIMU()
+{
+    imu->ReadAll();
+}
+
+void Sensors::getIMUAccel(float *accell)
+{
+    accell[0] = imu->ax;
+    accell[1] = imu->ay;
+    accell[2] = imu->az;
 }
 
 void Sensors::setMotorScale(float scale)
