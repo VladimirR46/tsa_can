@@ -49,10 +49,6 @@ CanBus can(PB_8, PB_9, 1000000, &controller);
 
 Ticker ticker;
 
-void SerialRead()
-{
-}
-
 int main()
 {
 
