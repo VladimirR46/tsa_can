@@ -39,9 +39,9 @@ Nucleo_Encoder_16_bits linear_encoder(TIM3);
 
 // ForceSensor
 AnalogIn force_sensor(PF_9);
-MPU9250 mpu9250(PF_0, PF_1);
+/*MPU9250 mpu9250(PF_0, PF_1);*/
 
-Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor, &mpu9250);
+Sensors sensors(&motor_encoder, &linear_encoder, &force_sensor /*, &mpu9250*/);
 
 Controller controller(&sensors, &driver);
 
@@ -56,5 +56,8 @@ int main()
 
   while (1)
   {
+    uint16_t dd = sensors.getMotorCountOneTurn();
+    printf("motor: %d\n", dd);
+    thread_sleep_for(100);
   }
 }

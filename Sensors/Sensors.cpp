@@ -3,11 +3,12 @@
 // class constructor
 Sensors::Sensors(Nucleo_Encoder_16_bits *motor_encoder,
                  Nucleo_Encoder_16_bits *linear_encoder,
-                 AnalogIn *force_sensor,
-                 MPU9250 *imu) : motor_encoder(motor_encoder),
-                                 linear_encoder(linear_encoder),
-                                 force_sensor(force_sensor),
-                                 imu(imu)
+                 AnalogIn *force_sensor /*,
+                 MPU9250 *imu*/
+                 ) : motor_encoder(motor_encoder),
+                     linear_encoder(linear_encoder),
+                     force_sensor(force_sensor) /*,
+                                 imu(imu)*/
 {
     printf("Sensors object was constructed.\n");
 }

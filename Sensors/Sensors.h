@@ -24,8 +24,9 @@ public:
     // class constructor
     Sensors(Nucleo_Encoder_16_bits *motor_encoder,
             Nucleo_Encoder_16_bits *linear_encoder,
-            AnalogIn *force_sensor,
-            MPU9250 *imu);
+            AnalogIn *force_sensor /*,
+            MPU9250 *imu*/
+    );
 
     // imu
     void readIMU();

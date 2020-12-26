@@ -16,9 +16,9 @@ class CanBus
 public:
     enum
     {
-        MSG_MOTOR_ON,
-        MSG_MOTOR_OFF,
-        MSG_SET_CURRENT,
+        MSG_MOTOR_ON = 0x88,
+        MSG_MOTOR_OFF = 0x80,
+        MSG_SET_CURRENT_1 = 0xA1,
         MSG_WRITE_PID_RAM,
         MSG_READ_PID,
         MSG_SET_POSITION,
@@ -33,15 +33,13 @@ public:
     // cmd function
     void set_motor_on(CANMessage &msg);
     void set_motor_off(CANMessage &msg);
-    void set_current_callback(CANMessage &msg);
+    void set_current_1(CANMessage &msg);
     void write_pid_ram(CANMessage &msg);
     void read_pid_callback(CANMessage &msg);
     void set_position_callback(CANMessage &msg);
     void read_imu_accellerometer(CANMessage &msg);
 
-    // Utility functions
-    static uint32_t get_node_id(uint32_t msgID);
-    static uint32_t get_cmd_id(uint32_t msgID);
+    void unknown_command(CANMessage &msg);
 
     // class destructor
     ~CanBus();
